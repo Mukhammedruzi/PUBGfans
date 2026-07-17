@@ -172,9 +172,10 @@ def check_codes():
 
         except Exception as e:
             message += f"❌ Xatolik\n{url}\n{e}\n\n"
-
-    send_message(message)
+             
+            send_message(message)
 if __name__ == "__main__":
     check_sites()
     check_codes()
     check_sources()
+    check_redeem()
