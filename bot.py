@@ -21,6 +21,10 @@ SOURCES = {
     "MLBB Facebook": "https://www.facebook.com/MobileLegendsGame",
     "MLBB X": "https://x.com/MobileLegendsOL"
 }
+CODE_SOURCES = [
+    "https://www.reddit.com/r/PUBGMobile/new/",
+    "https://www.reddit.com/r/MobileLegendsGame/new/"
+]
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -138,7 +142,36 @@ def check_redeem():
         message += f"• {code}\n"
 
     send_message(message)
+def check_codes():
+    message = "🎁 Yangi redeem kodlar\n\n"
+
+    for url in CODE_SOURCES:
+        try:
+            html = get_page(url)
+
+            keywords = [
+                "redeem",
+                "code",
+                "gift code",
+                "cdkey",
+                "兑换码"
+            ]
+
+            found = False
+
+            for word in keywords:
+                if word.lower() in html.lower():
+                    message += f"✅ Topildi: {word}\n{url}\n\n"
+                    found = True
+
+            if not found:
+                message += f"❌ Kod topilmadi\n{url}\n\n"
+
+        except Exception as e:
+            message += f"❌ Xatolik\n{url}\n{e}\n\n"
+
+    send_message(message)
 if __name__ == "__main__":
     check_sites()
-    check_redeem()
+    check_codes()
     check_sources()
