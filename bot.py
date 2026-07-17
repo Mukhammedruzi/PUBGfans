@@ -7,6 +7,7 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 DATA_FILE = "data.json"
+REDEEM_DATA_FILE = "redeem_data.json"
 REDEEM_URL = "https://www.pubgmobile.com/redeem/"
 SITES = {
     
