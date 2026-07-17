@@ -177,7 +177,7 @@ def check_rss():
                             message += f"🔗 {post.link}\n\n"
                     else:
                         message += f"📰 {post.title}\n"
-                    message += f"🔗 {post.link}\n\n"
+                        message += f"🔗 {post.link}\n\n"
                     break
 
         except Exception as e:
