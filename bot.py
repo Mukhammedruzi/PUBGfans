@@ -22,8 +22,8 @@ SOURCES = {
     "MLBB X": "https://x.com/MobileLegendsOL"
 }
 CODE_SOURCES = [
-    "https://www.reddit.com/r/PUBGMobile/new/",
-    "https://www.reddit.com/r/MobileLegendsGame/new/"
+    "https://old.reddit.com/r/PUBGMobile/new/",
+    "https://old.reddit.com/r/MobileLegendsGame/new/"
 ]
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
