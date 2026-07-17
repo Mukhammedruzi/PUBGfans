@@ -148,7 +148,7 @@ def check_redeem():
 def check_codes():
     message = "🎁 Yangi redeem kodlar\n\n"
 
-    for url in CODE_SOURCES:
+    for name, url in SOURCES.items():
         try:
             html = get_page(url)
 
@@ -168,7 +168,7 @@ def check_codes():
                     found = True
 
             if not found:
-                message += f"❌ Kod topilmadi\n{url}\n\n"
+                message += f"✅ {name}\n{url}\n\n"
 
         except Exception as e:
             message += f"❌ Xatolik\n{url}\n{e}\n\n"
@@ -177,5 +177,4 @@ def check_codes():
 if __name__ == "__main__":
     check_sites()
     check_codes()
-    check_sources()
     check_redeem()
