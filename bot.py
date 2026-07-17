@@ -46,7 +46,9 @@ def save_data(data):
 
 def get_page(url):
     headers = {
-        "User-Agent": "Mozilla/5.0"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml",
+    "Accept-Language": "en-US,en;q=0.9"
     }
     r = requests.get(url, headers=headers, timeout=15)
     r.raise_for_status()
