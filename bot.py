@@ -40,10 +40,10 @@ def get_page(url):
     r.raise_for_status()
     return r.text
     def check_sites():
-    old = load_data()
-    new = {}
+        old = load_data()
+        new = {}
 
-    message = "🎮 PUBG + MLBB Yangiliklari\n\n"
+        message = "🎮 PUBG + MLBB Yangiliklari\n\n"
     changed = False
 
     for name, url in SITES.items():
