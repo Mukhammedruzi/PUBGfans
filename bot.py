@@ -149,31 +149,32 @@ def check_redeem():
 def check_codes():
     message = "🎁 Yangi redeem kodlar\n\n"
 
+    keywords = [
+        "redeem",
+        "redeem code",
+        "gift code",
+        "cdkey",
+        "兑换码"
+    ]
+
     for name, url in SOURCES.items():
         try:
-            html = get_page(url)
-
-            keywords = [
-                "redeem",
-                "code",
-                "gift code",
-                "cdkey",
-                "兑换码"
-            ]
+            html = get_page(url).lower()
 
             found = False
 
             for word in keywords:
-                if word.lower() in html.lower():
-                    message += f"✅ Topildi: {word}\n{url}\n\n"
+                if word.lower() in html:
+                    message += f"✅ {name}\n🔎 Kalit so'z: {word}\n🌐 {url}\n\n"
                     found = True
+                    break
 
             if not found:
-                message += f"✅ {name}\n{url}\n\n"
+                message += f"ℹ️ {name}\n🌐 {url}\nKod topilmadi.\n\n"
 
         except Exception as e:
-            message += f"❌ Xatolik\n{url}\n{e}\n\n"
-             
+            message += f"❌ {name}\n🌐 {url}\nXatolik: {e}\n\n"
+
             send_message(message)
 if __name__ == "__main__":
     check_sites()
