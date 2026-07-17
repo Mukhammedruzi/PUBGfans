@@ -55,7 +55,7 @@ def check_sites():
 
             new[name] = title
 
-        if old.get(name) != title:
+            if old.get(name) != title:
                 changed = True
                 message += f"{name}\n{title}\n{url}\n\n"
 
