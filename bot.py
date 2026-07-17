@@ -98,3 +98,4 @@ def check_redeem():
     send_message(message)
 if __name__ == "__main__":
     check_sites()
+    check_redeem()
