@@ -1,4 +1,4 @@
-name: Redeem Code Bot
+name: Kod botini faollashtirish
 
 on:
   workflow_dispatch:
@@ -20,7 +20,7 @@ jobs:
 
       - name: Kutubxonalarni o'rnatish
         run: |
-          pip install requests
+          pip install requests beautifulsoup4
 
       - name: Botni ishga tushirish
         run: |
