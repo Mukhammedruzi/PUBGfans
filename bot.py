@@ -18,9 +18,7 @@ SITES = {
     "MLBB Events": "https://m.mobilelegends.com/en/events"
 }
 SOURCES = {
-    "PUBG Facebook": "https://www.facebook.com/PUBGMOBILE",
     "PUBG X": "https://x.com/PUBGMOBILE",
-    "MLBB Facebook": "https://www.facebook.com/MobileLegendsGame",
     "MLBB X": "https://x.com/MobileLegendsOL"
 }
 RSS_SOURCES = [
@@ -176,7 +174,34 @@ def check_codes():
             message += f"❌ {name}\n🌐 {url}\nXatolik: {e}\n\n"
 
             send_message(message)
+def check_rss():
+    message = "📰 RSS yangiliklari\n\n"
+
+    keywords = [
+        "redeem",
+        "redeem code",
+        "gift code",
+        "cdkey"
+    ]
+
+    for url in RSS_SOURCES:
+        try:
+            feed = feedparser.parse(url)
+
+            for post in feed.entries[:5]:
+                text = (post.title + " " + post.link).lower()
+
+                for word in keywords:
+                    if word in text:
+                        message += f"✅ {post.title}\n{post.link}\n\n"
+                        break
+
+        except Exception as e:
+            message += f"❌ {url}\n{e}\n\n"
+
+            send_message(message)
 if __name__ == "__main__":
     check_sites()
     check_codes()
     check_redeem()
+    check_rss()
