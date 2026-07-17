@@ -1,17 +1,29 @@
 import requests
 
-print("=== PUBG + MLBB Redeem Bot ===")
+print("=== PUBG + MLBB News Bot ===")
 
-sources = [
-    "https://www.pubgmobile.com/",
-    "https://m.mobilelegends.com/"
-]
+sites = {
+    "PUBG Mobile": "https://www.pubgmobile.com/news.shtml",
+    "Mobile Legends": "https://m.mobilelegends.com/news"
+}
 
-for url in sources:
+headers = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+for game, url in sites.items():
+    print(f"\nTekshirilmoqda: {game}")
+
     try:
-        r = requests.get(url, timeout=10)
-        print(f"{url} -> {r.status_code}")
-    except Exception as e:
-        print(f"{url} -> Xatolik: {e}")
+        response = requests.get(url, headers=headers, timeout=15)
 
-print("Tekshirish tugadi.")
+        if response.status_code == 200:
+            print(f"✅ {game} sayti ochildi.")
+            print("Sahifa hajmi:", len(response.text), "ta belgi")
+        else:
+            print(f"❌ Xatolik: {response.status_code}")
+
+    except Exception as e:
+        print("❌ Xatolik:", e)
+
+print("\nTekshirish tugadi.")
