@@ -162,7 +162,7 @@ def check_rss():
     for url in RSS_SOURCES:
         try:
             feed = feedparser.parse(url)
-
+            message += f"Postlar soni: {len(feed.entries)}\n"
             for post in feed.entries[:5]:
                 text = (post.title + " " + post.link).lower()
                 codes = re.findall(r"\b[A-Z0-9]{10,20}\b", post.title.upper())
