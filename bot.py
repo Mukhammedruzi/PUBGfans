@@ -9,7 +9,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 DATA_FILE = "data.json"
 
 SITES = {
-    "PUBG News": "https://www.pubgmobile.com/news/",
+    "PUBG NEWS": "https://www.pubgmobile.com/en/news/",
     "PUBG Esports": "https://esports.pubgmobile.com/",
     "MLBB News": "https://m.mobilelegends.com/en/news",
     "MLBB Events": "https://m.mobilelegends.com/en/events"
