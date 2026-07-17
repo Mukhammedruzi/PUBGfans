@@ -19,8 +19,9 @@ jobs:
 
       - name: Kutubxonalarni o'rnatish
         run: |
-          pip install requests beautifulsoup4
-
+          pip install requests
+          beautifulsoup4 feedparser
+  
       - name: Botni ishga tushirish
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
