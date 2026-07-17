@@ -14,7 +14,12 @@ SITES = {
     "MLBB News": "https://m.mobilelegends.com/en/news",
     "MLBB Events": "https://m.mobilelegends.com/en/events"
 }
-
+SOURCES = {
+    "PUBG Facebook": "https://www.facebook.com/PUBGMOBILE",
+    "PUBG X": "https://x.com/PUBGMOBILE",
+    "MLBB Facebook": "https://www.facebook.com/MobileLegendsGame",
+    "MLBB X": "https://x.com/MobileLegendsOL"
+}
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     requests.post(url, json={
@@ -39,6 +44,13 @@ def get_page(url):
     r = requests.get(url, headers=headers, timeout=15)
     r.raise_for_status()
     return r.text
+def get_title(html):
+    soup = BeautifulSoup(html, "html.parser")
+
+    if soup.title:
+        return soup.title.text.strip()
+    else:
+        return "Sarlavha topilmadi"
 def check_redeem():
     message = "🎁 PUBG Redeem kodlari\n\n"
 
@@ -55,6 +67,30 @@ def check_redeem():
         message += f"❌ Xatolik: {e}"
 
     send_message(message)   
+def check_sources():
+    old = load_data()
+    new = {}
+
+    message = "📱 Ijtimoiy tarmoqlar\n\n"
+    changed = False
+
+    for name, url in SOURCES.items():
+        try:
+            html = get_page(url)
+            title = get_title(html)
+
+            new[name] = title
+
+            if old.get(name) != title:
+                changed = True
+                message += f"{name}\n{title}\n{url}\n\n"
+
+    except Exception as e:
+            message += f"❌ Xatolik ({name}): {e}\n\n"
+
+    if changed:
+        send_message(message)
+        save_data(new)  
 def check_sites():
     old = load_data()
     new = {}
@@ -98,5 +134,6 @@ def check_redeem():
 
     send_message(message)
 if __name__ == "__main__":
-    check_redeem()
     check_sites()
+    check_redeem()
+    check_sources()
