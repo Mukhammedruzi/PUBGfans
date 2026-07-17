@@ -18,10 +18,11 @@ def send_message(text):
 
 def check_sites():
     sites = {
-        "PUBG Mobile": "https://www.pubgmobile.com/en/news.shtml",
-        "Mobile Legends": "https://m.mobilelegends.com/en/news"
+    "PUBG Redeem": "https://www.pubgmobile.com/en/news",
+    "MLBB News": "https://m.mobilelegends.com/en/news",
+    "MLBB Events": "https://m.mobilelegends.com/en/events",
+    "PUBG Esports": "https://esports.pubgmobile.com/"
     }
-
     result = "🎮 PUBG + MLBB Bot\n\n"
 
     for name, url in sites.items():
