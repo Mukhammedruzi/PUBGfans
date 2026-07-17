@@ -40,14 +40,14 @@ def get_page(url):
     r.raise_for_status()
     return r.text
 def check_sites():
-        old = load_data()
-        new = {}
-    
-        message = "PUBG + MLBB Yangiliklari\n\n" 
-        changed = False
+    old = load_data()
+    new = {}
 
-        for name, url in SITES.items():
-            try:
+    message = "PUBG + MLBB Yangiliklari\n\n"
+    changed = False
+
+    for name, url in SITES.items():
+        try:
             html = get_page(url)
             soup = BeautifulSoup(html, "html.parser")
 
@@ -55,19 +55,19 @@ def check_sites():
 
             new[name] = title
 
-        if  old.get(name) != title:
+        if old.get(name) != title:
                 changed = True
-                message += f"🆕 {name}\n{title}\n{url}\n\n"
+                message += f"{name}\n{title}\n{url}\n\n"
 
         except Exception as e:
-            message += f"❌ {name}: {e}\n\n"
+            message += f"Xatolik ({name}): {e}\n\n"
 
-        if changed:
-            send_message(message)
-            save_data(new)
-            print("Yangi yangilik yuborildi.")
-        else:
-            print("Yangi yangilik topilmadi.")
+    if changed:
+        send_message(message)
+        save_data(new)
+        print("Yangi yangilik yuborildi.")
+    else:
+        print("Yangi yangilik topilmadi.")
 
-   if __name__ == "__main__":
+if __name__ == "__main__":
     check_sites()
