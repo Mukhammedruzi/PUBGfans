@@ -1,44 +1,73 @@
 import os
+import json
 import requests
+from bs4 import BeautifulSoup
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
+DATA_FILE = "data.json"
+
+SITES = {
+    "PUBG News": "https://www.pubgmobile.com/news/",
+    "PUBG Esports": "https://esports.pubgmobile.com/",
+    "MLBB News": "https://m.mobilelegends.com/en/news",
+    "MLBB Events": "https://m.mobilelegends.com/en/events"
+}
+
 def send_message(text):
-    if not BOT_TOKEN or not CHAT_ID:
-        print("BOT_TOKEN yoki CHAT_ID topilmadi.")
-        return
-
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
     requests.post(url, json={
         "chat_id": CHAT_ID,
         "text": text
     })
 
-def check_sites():
-    sites = {
-    "PUBG News": "https://www.pubgmobile.com/news.shtml",
-    "PUBG Esports": "https://esports.pubgmobile.com/",
-    "MLBB News": "https://m.mobilelegends.com/en/news",
-    "MLBB Events": "https://m.mobilelegends.com/en/events"
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def save_data(data):
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+def get_page(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
     }
-    result = "🎮 PUBG + MLBB Bot\n\n"
+    r = requests.get(url, headers=headers, timeout=15)
+    r.raise_for_status()
+    return r.text
+    def check_sites():
+    old = load_data()
+    new = {}
 
-    for name, url in sites.items():
+    message = "🎮 PUBG + MLBB Yangiliklari\n\n"
+    changed = False
+
+    for name, url in SITES.items():
         try:
-            r = requests.get(url, timeout=10)
+            html = get_page(url)
+            soup = BeautifulSoup(html, "html.parser")
 
-            if r.status_code == 200:
-                result += f"✅ {name} ishlayapti.\n"
-            else:
-                result += f"❌ {name} xato: {r.status_code}\n"
+            title = soup.title.text.strip() if soup.title else "Sarlavha topilmadi"
+
+            new[name] = title
+
+            if old.get(name) != title:
+                changed = True
+                message += f"🆕 {name}\n{title}\n{url}\n\n"
 
         except Exception as e:
-            result += f"❌ {name}: {e}\n"
+            message += f"❌ {name}: {e}\n\n"
 
-    send_message(result)
-    print(result)
+    if changed:
+        send_message(message)
+        save_data(new)
+        print("Yangi yangilik yuborildi.")
+    else:
+        print("Yangi yangilik topilmadi.")
 
 if __name__ == "__main__":
     check_sites()
