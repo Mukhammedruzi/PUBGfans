@@ -47,6 +47,22 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+        CODE_FILE = "codes.json"
+
+def load_codes():
+    if os.path.exists(CODE_FILE):
+        with open(CODE_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return []
+
+def is_new_code(code):
+    codes = load_codes()
+    if code in codes:
+        return False
+    codes.append(code)
+    with open(CODE_FILE, "w", encoding="utf-8") as f:
+        json.dump(codes, f, ensure_ascii=False, indent=2)
+    return True
 def get_page(url):
     headers = {
         "User-Agent": "Mozilla/5.0"
@@ -154,8 +170,11 @@ def check_rss():
                 for word in keywords:
                    if word in text:
                     if codes:
-                        message += "🎁 Yangi redeem kod topildi!\n"
-                        message += f"🎫 Kod: {codes[0]}\n"
+                        if is_new_code(codes[0]):
+                            message += "🎁 Yangi redeem kod topildi!\n"
+                            message += f"🎫 Kod: {codes[0]}\n"
+                            message += f"📰 {post.title}\n"
+                            message += f"🔗 {post.link}\n\n"
                     else:
                         message += f"📰 {post.title}\n"
                     message += f"🔗 {post.link}\n\n"
