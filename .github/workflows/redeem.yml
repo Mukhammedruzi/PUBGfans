@@ -19,8 +19,7 @@ jobs:
 
       - name: Kutubxonalarni o'rnatish
         run: |
-          pip install requests
-          beautifulsoup4 feedparser
+          pip install requests beautifulsoup4 feedparser
   
       - name: Botni ishga tushirish
         env:
