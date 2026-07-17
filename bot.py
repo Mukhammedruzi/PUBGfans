@@ -103,8 +103,10 @@ def check_sites():
             html = get_page(url)
             soup = BeautifulSoup(html, "html.parser")
 
-            title = soup.title.text.strip() if soup.title else "Sarlavha topilmadi"
-
+            if soup.title:
+                title = soup.title.text.strip()
+            else:
+                title = "Sarlavha topilmadi"
             new[name] = title
 
         if old.get(name) != title:
