@@ -22,6 +22,8 @@ SOURCES = {
 }
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    text += f"\n\n🕒 {time_now}"
     requests.post(url, json={
         "chat_id": CHAT_ID,
         "text": text
