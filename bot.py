@@ -151,8 +151,16 @@ def check_codes():
         "redeem",
         "redeem code",
         "gift code",
+        "exchange code",
         "cdkey",
-        "兑换码"
+        "code",
+        "gift",
+        "兑换码",
+        "兑换",
+        "claim",
+        "free reward",
+        "free skin",
+        "reward"
     ]
 
     for name, url in SOURCES.items():
