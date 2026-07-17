@@ -44,7 +44,7 @@ def check_sites():
         new = {}
 
         message = "🎮 PUBG + MLBB Yangiliklari\n\n"
-    changed = False
+        changed = False
 
     for name, url in SITES.items():
         try:
