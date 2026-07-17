@@ -1,34 +1,38 @@
 import os
-import json
 import re
+import json
 import requests
+import feedparser
 from bs4 import BeautifulSoup
 from datetime import datetime
-import feedparser
+
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 DATA_FILE = "data.json"
-REDEEM_DATA_FILE = "redeem_data.json"
-REDEEM_URL = "https://www.pubgmobile.com/redeem/"
+
 SITES = {
-    
     "PUBG Esports": "https://esports.pubgmobile.com/",
     "MLBB News": "https://m.mobilelegends.com/en/news",
     "MLBB Events": "https://m.mobilelegends.com/en/events"
 }
+
 SOURCES = {
     "PUBG X": "https://x.com/PUBGMOBILE",
     "MLBB X": "https://x.com/MobileLegendsOL"
 }
+
 RSS_SOURCES = [
     "https://www.reddit.com/r/PUBGMobile/.rss",
     "https://www.reddit.com/r/MobileLegendsGame/.rss"
 ]
+
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
     time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     text += f"\n\n🕒 {time_now}"
+
     requests.post(url, json={
         "chat_id": CHAT_ID,
         "text": text
@@ -43,47 +47,33 @@ def load_data():
 def save_data(data):
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
 def get_page(url):
     headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml",
-    "Accept-Language": "en-US,en;q=0.9"
+        "User-Agent": "Mozilla/5.0"
     }
-    r = requests.get(url, headers=headers, timeout=15)
+
+    r = requests.get(url, headers=headers, timeout=20)
     r.raise_for_status()
     return r.text
+
+
 def get_title(html):
     soup = BeautifulSoup(html, "html.parser")
 
     if soup.title:
         return soup.title.text.strip()
-    else:
-        return "Sarlavha topilmadi"
-def check_redeem():
-    message = "🎁 PUBG Redeem kodlari\n\n"
 
-    try:
-        url = REDEEM_URL
-        html = get_page(url)
+    return "Sarlavha topilmadi"
 
-        if "redeem" in html.lower():
-            message += "✅ Redeem sahifasi ishlayapti."
-        else:
-            message += "⚠️ Redeem sahifasi tekshirildi."
 
-    except Exception as e:
-        message += f"❌ Xatolik: {e}"
-
-    send_message(message)   
-def check_sources():
+def check_sites():
     old = load_data()
     new = {}
 
-    message = "📱 Ijtimoiy tarmoqlar\n\n"
+    message = "📰 PUBG + MLBB Yangiliklari\n\n"
     changed = False
 
-    for name, url in SOURCES.items():
+    for name, url in SITES.items():
         try:
             html = get_page(url)
             title = get_title(html)
@@ -92,60 +82,18 @@ def check_sources():
 
             if old.get(name) != title:
                 changed = True
-                message += f"{name}\n{title}\n{url}\n\n"
+                message += f"📢 {name}\n"
+                message += f"{title}\n"
+                message += f"{url}\n\n"
 
         except Exception as e:
-            message += f"❌ Xatolik ({name}): {e}\n\n"
-
-    if changed:
-        send_message(message)
-        save_data(new)  
-def check_sites():
-    old = load_data()
-    new = {}
-
-    message = "PUBG + MLBB Yangiliklari\n\n"
-    changed = False
-
-    for name, url in SITES.items():
-        try:
-            html = get_page(url)
-            soup = BeautifulSoup(html, "html.parser")
-
-            if soup.title:
-                title = soup.title.text.strip()
-            else:
-                title = "Sarlavha topilmadi"
-            new[name] = title
-
-            if old.get(name) != title:
-                changed = True
-                message += f"{name}\n{title}\n{url}\n\n"
-
-        except Exception as e:
-            message += f"Xatolik ({name}): {e}\n\n"
+            message += f"❌ {name}\n{e}\n\n"
 
     if changed:
         send_message(message)
         save_data(new)
-        print("Yangi yangilik yuborildi.")
-    else:
-        print("Yangi yangilik topilmadi.")
-def check_redeem():
-    codes = [
-        "PUBG2026",
-        "PUBGMOBILE",
-        "MLBB2026"
-    ]
-
-    message = "🎁 Redeem kodlarni tekshirish\n\n"
-
-    for code in codes:
-        message += f"• {code}\n"
-
-    send_message(message)
 def check_codes():
-    message = "🎁 Yangi redeem kodlar\n\n"
+    message = "🎁 Redeem kodlarni tekshirish\n\n"
 
     keywords = [
         "redeem",
@@ -155,12 +103,9 @@ def check_codes():
         "cdkey",
         "code",
         "gift",
-        "兑换码",
-        "兑换",
-        "claim",
-        "free reward",
+        "reward",
         "free skin",
-        "reward"
+        "兑换码"
     ]
 
     for name, url in SOURCES.items():
@@ -171,17 +116,23 @@ def check_codes():
 
             for word in keywords:
                 if word.lower() in html:
-                    message += f"✅ {name}\n🔎 Kalit so'z: {word}\n🌐 {url}\n\n"
+                    message += f"✅ {name}\n"
+                    message += f"🔎 Kalit so'z: {word}\n"
+                    message += f"🌐 {url}\n\n"
                     found = True
                     break
 
             if not found:
-                message += f"ℹ️ {name}\n🌐 {url}\nKod topilmadi.\n\n"
+                message += f"ℹ️ {name}\n"
+                message += f"🌐 {url}\n"
+                message += "Kod topilmadi.\n\n"
 
         except Exception as e:
-            message += f"❌ {name}\n🌐 {url}\nXatolik: {e}\n\n"
+            message += f"❌ {name}\n{e}\n\n"
 
-            send_message(message)
+    send_message(message)
+
+
 def check_rss():
     message = "📰 RSS yangiliklari\n\n"
 
@@ -189,6 +140,7 @@ def check_rss():
         "redeem",
         "redeem code",
         "gift code",
+        "exchange code",
         "cdkey"
     ]
 
@@ -201,15 +153,26 @@ def check_rss():
 
                 for word in keywords:
                     if word in text:
-                        message += f"✅ {post.title}\n{post.link}\n\n"
+                        message += f"✅ {post.title}\n"
+                        message += f"{post.link}\n\n"
                         break
 
         except Exception as e:
             message += f"❌ {url}\n{e}\n\n"
 
-            send_message(message)
+    send_message(message)
 if __name__ == "__main__":
-    check_sites()
-    check_codes()
-    check_redeem()
-    check_rss()
+    try:
+        check_sites()
+    except Exception as e:
+        send_message(f"❌ check_sites xatosi:\n{e}")
+
+    try:
+        check_codes()
+    except Exception as e:
+        send_message(f"❌ check_codes xatosi:\n{e}")
+
+    try:
+        check_rss()
+    except Exception as e:
+        send_message(f"❌ check_rss xatosi:\n{e}")
