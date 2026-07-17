@@ -109,11 +109,11 @@ def check_sites():
                 title = "Sarlavha topilmadi"
             new[name] = title
 
-        if old.get(name) != title:
+            if old.get(name) != title:
                 changed = True
                 message += f"{name}\n{title}\n{url}\n\n"
 
-        except Exception as e:
+    except Exception as e:
             message += f"Xatolik ({name}): {e}\n\n"
 
     if changed:
