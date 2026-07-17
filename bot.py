@@ -39,7 +39,7 @@ def get_page(url):
     r = requests.get(url, headers=headers, timeout=15)
     r.raise_for_status()
     return r.text
-    def check_sites():
+def check_sites():
         old = load_data()
         new = {}
 
@@ -55,7 +55,7 @@ def get_page(url):
 
             new[name] = title
 
-            if old.get(name) != title:
+            if  old.get(name) != title:
                 changed = True
                 message += f"🆕 {name}\n{title}\n{url}\n\n"
 
