@@ -8,7 +8,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 
 DATA_FILE = "data.json"
 
-SITES = 
+SITES = {
     "PUBG Esports": "https://esports.pubgmobile.com/",
     "MLBB News": "https://m.mobilelegends.com/en/news",
     "MLBB Events": "https://m.mobilelegends.com/en/events"
@@ -19,7 +19,7 @@ def send_message(text):
     requests.post(url, json={
         "chat_id": CHAT_ID,
         "text": text
-    })
+    }
 
 def load_data():
     if os.path.exists(DATA_FILE):
