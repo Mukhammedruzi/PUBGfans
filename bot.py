@@ -1,4 +1,4 @@
-import os
+8import os
 import json
 import requests
 from bs4 import BeautifulSoup
@@ -67,6 +67,18 @@ def check_sites():
         print("Yangi yangilik yuborildi.")
     else:
         print("Yangi yangilik topilmadi.")
+def check_redeem():
+    codes = [
+        "PUBG2026",
+        "PUBGMOBILE",
+        "MLBB2026"
+    ]
 
+    message = "🎁 Redeem kodlarni tekshirish\n\n"
+
+    for code in codes:
+        message += f"• {code}\n"
+
+    send_message(message)
 if __name__ == "__main__":
     check_sites()
