@@ -7,8 +7,9 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
 DATA_FILE = "data.json"
-
+REDEEM_URL = "https://www.pubgmobile.com/redeem/"
 SITES = {
+    
     "PUBG Esports": "https://esports.pubgmobile.com/",
     "MLBB News": "https://m.mobilelegends.com/en/news",
     "MLBB Events": "https://m.mobilelegends.com/en/events"
@@ -42,7 +43,7 @@ def check_redeem():
     message = "🎁 PUBG Redeem kodlari\n\n"
 
     try:
-        url = "https://www.pubgmobile.com/redeem/"
+        url = REDEEM_URL
         html = get_page(url)
 
         if "redeem" in html.lower():
@@ -97,5 +98,5 @@ def check_redeem():
 
     send_message(message)
 if __name__ == "__main__":
-    check_sites()
     check_redeem()
+    check_sites()
