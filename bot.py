@@ -38,6 +38,22 @@ def get_page(url):
     r = requests.get(url, headers=headers, timeout=15)
     r.raise_for_status()
     return r.text
+def check_redeem():
+    message = "🎁 PUBG Redeem kodlari\n\n"
+
+    try:
+        url = "https://www.pubgmobile.com/redeem/"
+        html = get_page(url)
+
+        if "redeem" in html.lower():
+            message += "✅ Redeem sahifasi ishlayapti."
+        else:
+            message += "⚠️ Redeem sahifasi tekshirildi."
+
+    except Exception as e:
+        message += f"❌ Xatolik: {e}"
+
+    send_message(message)   
 def check_sites():
     old = load_data()
     new = {}
