@@ -1,8 +1,17 @@
 import requests
 
-print("Bot ishga tushdi!")
+print("=== PUBG + MLBB Redeem Bot ===")
 
-url = "https://www.google.com"
-r = requests.get(url)
+sources = [
+    "https://www.pubgmobile.com/",
+    "https://m.mobilelegends.com/"
+]
 
-print("Status:", r.status_code)
+for url in sources:
+    try:
+        r = requests.get(url, timeout=10)
+        print(f"{url} -> {r.status_code}")
+    except Exception as e:
+        print(f"{url} -> Xatolik: {e}")
+
+print("Tekshirish tugadi.")
