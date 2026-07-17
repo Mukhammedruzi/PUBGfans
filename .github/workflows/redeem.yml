@@ -1,19 +1,27 @@
 name: Redeem Code Bot
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: "0 */6 * * *"
-  workflow_dispatch:
 
 jobs:
-  check:
+  run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Repositoryni yuklash
         uses: actions/checkout@v4
 
-      - name: Test
+      - name: Python o'rnatish
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Kutubxonalarni o'rnatish
         run: |
-          echo "Bot ishga tushdi"
-          date
+          pip install requests
+
+      - name: Botni ishga tushirish
+        run: |
+          python bot.py
