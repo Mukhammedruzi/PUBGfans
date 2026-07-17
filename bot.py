@@ -3,6 +3,7 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
+import feedparser
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
