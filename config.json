@@ -1,0 +1,9 @@
+{
+  "bot_name": "Redeem Code Bot",
+  "timezone": "Asia/Tashkent",
+  "check_interval": 10,
+  "max_posts": 5,
+  "telegram": {
+    "parse_mode": "HTML"
+  }
+}
