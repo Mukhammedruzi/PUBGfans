@@ -85,7 +85,7 @@ def check_sources():
                 changed = True
                 message += f"{name}\n{title}\n{url}\n\n"
 
-    except Exception as e:
+        except Exception as e:
             message += f"❌ Xatolik ({name}): {e}\n\n"
 
     if changed:
