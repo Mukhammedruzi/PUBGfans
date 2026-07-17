@@ -19,7 +19,7 @@ def send_message(text):
     requests.post(url, json={
         "chat_id": CHAT_ID,
         "text": text
-    }
+    })
 
 def load_data():
     if os.path.exists(DATA_FILE):
