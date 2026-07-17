@@ -150,17 +150,21 @@ def check_rss():
 
             for post in feed.entries[:5]:
                 text = (post.title + " " + post.link).lower()
-
+                codes = re.findall(r"\b[A-Z0-9]{10,20}\b", post.title.upper())
                 for word in keywords:
-                    if word in text:
-                        message += f"✅ {post.title}\n"
-                        message += f"{post.link}\n\n"
-                        break
+                   if word in text:
+                    if codes:
+                        message += "🎁 Yangi redeem kod topildi!\n"
+                        message += f"🎫 Kod: {codes[0]}\n"
+                    else:
+                        message += f"📰 {post.title}\n"
+                    message += f"🔗 {post.link}\n\n"
+                    break
 
         except Exception as e:
             message += f"❌ {url}\n{e}\n\n"
 
-    send_message(message)
+            send_message(message)
 if __name__ == "__main__":
     try:
         check_sites()
