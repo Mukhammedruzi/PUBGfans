@@ -150,7 +150,7 @@ def check_codes():
 
 def check_rss():
     message = "📰 RSS yangiliklari\n\n"
-
+    send_message("🧪 RSS test boshlandi")
     keywords = [
         "redeem",
         "redeem code",
