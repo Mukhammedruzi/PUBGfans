@@ -46,8 +46,8 @@ def check_sites():
         message = "PUBG + MLBB Yangiliklari\n\n" 
         changed = False
 
-    for name, url in SITES.items():
-        try:
+        for name, url in SITES.items():
+            try:
             html = get_page(url)
             soup = BeautifulSoup(html, "html.parser")
 
@@ -55,19 +55,19 @@ def check_sites():
 
             new[name] = title
 
-            if  old.get(name) != title:
+        if  old.get(name) != title:
                 changed = True
                 message += f"🆕 {name}\n{title}\n{url}\n\n"
 
         except Exception as e:
             message += f"❌ {name}: {e}\n\n"
 
-    if changed:
-        send_message(message)
-        save_data(new)
-        print("Yangi yangilik yuborildi.")
-    else:
-        print("Yangi yangilik topilmadi.")
+        if changed:
+            send_message(message)
+            save_data(new)
+            print("Yangi yangilik yuborildi.")
+        else:
+            print("Yangi yangilik topilmadi.")
 
-if __name__ == "__main__":
+   if __name__ == "__main__":
     check_sites()
