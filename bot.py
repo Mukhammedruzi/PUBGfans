@@ -104,10 +104,7 @@ def find_codes(text):
     text = text.upper()
 
     patterns = [
-        r"\b[A-Z0-9]{16}\b",
-        r"\b[A-Z0-9]{15}\b",
-        r"\bPUBG[A-Z0-9]{6,12}\b",
-        r"\bMLBB[A-Z0-9]{6,12}\b",
+        r"\b(?=.*[A-Z])(?=.*\d)[A-Z0-9]{10,16}\b",
     ]
 
     found = set()
@@ -175,8 +172,10 @@ def check_rss():
             if not feed.entries:
                 continue
 
-            post = feed.entries[0]   # faqat eng yangi post
-
+            post = feed.entries[0]  
+           post_id = post.link
+           if not is_new_code(post_id):
+               continue  
             text = (
                 post.title + " " +
                 getattr(post, "summary", "")
