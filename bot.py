@@ -107,7 +107,7 @@ def find_codes(text):
 
     found = set()
 
-    for pattern in patterns (
+    for pattern in patterns ()
         found.update(re.findall(pattern, text))
 
     return sorted(found)
