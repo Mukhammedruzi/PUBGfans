@@ -200,19 +200,19 @@ def check_codes():
 
     if message != "🎁 Redeem kodlarni tekshirish\n\n":
         send_message(message)
+if message != "🎁 Redeem kodlarni tekshirish\n\n":
+    send_message(message)
+
 import time
 
 def main():
     send_message("🤖 Bot ishga tushdi")
 
-    while True:
-        try:
-            check_codes()
-            check_rss()
-        except Exception as e:
-            send_message(f"❌ Xatolik:\n{e}")
-
-        time.sleep(CONFIG.get("check_interval", 300))
+    try:
+        check_codes()
+        check_rss()
+    except Exception as e:
+        send_message(f"❌ Xatolik:\n{e}")
 
 if __name__ == "__main__":
     main()
