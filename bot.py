@@ -98,43 +98,25 @@ def is_new_code(code):
     save_json(CODES_FILE, codes)
 
     return True
-
-
 def find_codes(text):
+    import re
+
     text = text.upper()
 
     patterns = [
-        r"\b(?=.*[A-Z])(?=.*\d)[A-Z0-9]{10,16}\b",
+        r"\b[A-Z0-9]{10,16}\b",
+        r"\bPUBG[A-Z0-9]{4,12}\b",
+        r"\bMLBB[A-Z0-9]{4,12}\b",
     ]
 
     found = set()
 
     for pattern in patterns:
-        found.update(re.findall(pattern, text))
+        for code in re.findall(pattern, text):
+            if any(ch.isdigit() for ch in code):
+                found.add(code)
 
     return sorted(found)
-def check_sites():
-    message = "📰 PUBG + MLBB Yangiliklari\n\n"
-
-    for name, url in SITES.items():
-        try:
-            html = get_page(url)
-            title = get_title(html)
-
-            message += (
-                f"📢 {name}\n"
-                f"{title}\n"
-                f"{url}\n\n"
-            )
-
-        except Exception as e:
-            message += (
-                f"❌ {name}\n"
-                f"{e}\n\n"
-            )
-
-    if message != "📰 PUBG + MLBB Yangiliklari\n\n":
-        send_message(message)
 def check_codes():
     message = "🎁 Yangi redeem kodlar\n\n"
 
