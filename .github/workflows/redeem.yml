@@ -27,3 +27,13 @@ jobs:
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
           python bot.py
+      - name: Git konfiguratsiyasi
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: codes.json ni saqlash
+        run: |
+          git add codes.json
+          git diff --cached --quiet || git commit -m "Update codes database"
+          git push
