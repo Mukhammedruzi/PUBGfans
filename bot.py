@@ -167,6 +167,9 @@ def check_rss():
         try:
             feed = feedparser.parse(url)
 
+            if not feed.entries:
+                continue
+
             for post in feed.entries[:5]:
                 text = (
                     post.title + " " +
@@ -181,10 +184,8 @@ def check_rss():
                 for code in codes:
                     if is_new_code(code):
                         send_message(
-                            f"🎁 Yangi redeem kod topildi!\n\n"
-                            f"🔑 {code}\n"
-                            f"📰 {post.title}\n"
-                            f"🔗 {post.link}"
+                            f"🎁 YANGI REDEEM KOD TOPILDI!\n\n"
+                            f"🔑 Kod: {code}\n\n"
                         )
 
         except Exception as e:
