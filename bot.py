@@ -194,12 +194,13 @@ import time
 
 def main():
     send_message("🤖 Redeem Code Bot ishga tushdi!")
-        try:
-            check_codes()
-            check_rss()
-            check_sites()
+    
+    try:
+        check_codes()
+        check_rss()
+        check_sites()
 
-        except Exception as e:
+    except Exception as e:
             send_message(f"❌ Xatolik:\n{e}")
 if __name__ == "__main__":
     main()
