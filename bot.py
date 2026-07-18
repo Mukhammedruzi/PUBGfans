@@ -54,8 +54,12 @@ SITES = {
     item["name"]: item["url"]
     for item in SOURCES.get("websites", [])
 }
-
 RSS_SOURCES = SOURCES.get("rss", [])
+RSS_FILE = "rss_seen.json"
+
+if not os.path.exists(RSS_FILE):
+    with open(RSS_FILE, "w") as f:
+        f.write("[]")
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
