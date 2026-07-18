@@ -9,12 +9,48 @@ from datetime import datetime
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-DATA_FILE = "data.json"
+CONFIG_FILE = "config.json"
+SOURCES_FILE = "sources.json"
+KEYWORDS_FILE = "keywords.json"
 CODES_FILE = "codes.json"
+REDEEM_FILE = "redeem.json"
+def load_json(filename, default):
+    if os.path.exists(filename):
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception:
+            return default
+    return default
 
 
+def save_json(filename, data):
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+def load_config():
+    return load_json(CONFIG_FILE, {})
+
+
+def load_sources():
+    return load_json(SOURCES_FILE, {})
+
+
+def load_keywords():
+    data = load_json(KEYWORDS_FILE, {})
+    return data.get("keywords", [])
+
+CONFIG = load_config()
+SOURCES = load_sources()
+KEYWORDS = load_keywords()
+
+SITES = {
+    item["name"]: item["url"]
+    for item in SOURCES.get("websites", [])
+}
+
+RSS_SOURCES = SOURCES.get("rss", [])
 def send_message(text):
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
@@ -28,76 +64,104 @@ def send_message(text):
         },
         timeout=20
     )
-def load_json(filename, default):
-    if os.path.exists(filename):
-        try:
-            with open(filename, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except:
-            return default
-    return default
-
-
-def save_json(filename, data):
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-def load_config():
-    return load_json("config.json", {})
-
-def load_sources():
-    return load_json("sources.json", {})
-
-def load_keywords():
-    data = load_json("keywords.json", {})
-    return data.get("keywords", [])
-CONFIG = load_config()
-SOURCES = load_sources()
-
-SITES = {
-    item["name"]: item["url"]
-    for item in SOURCES.get("websites", [])
-}
-
-RSS_SOURCES = SOURCES.get("rss", [])
-
-KEYWORDS = load_keywords()
 def get_page(url):
     headers = {
-        "User-Agent": "Mozilla/5.0"
+        "User-Agent": "Mozilla/5.0 (RedeemBot)"
     }
 
-    r = requests.get(url, headers=headers, timeout=20)
-    r.raise_for_status()
-    return r.text
+    response = requests.get(url, headers=headers, timeout=20)
+    response.raise_for_status()
+    return response.text
 
 
 def get_title(html):
     soup = BeautifulSoup(html, "html.parser")
 
     if soup.title:
-        return soup.title.text.strip()
+        return soup.title.get_text(strip=True)
 
     return "Sarlavha topilmadi"
 
 
+def is_new_code(code):
+    codes = load_json(CODES_FILE, [])
+
+    if code in codes:
+        return False
+
+    codes.append(code)
+    save_json(CODES_FILE, codes)
+
+    return True
+
+
 def find_codes(text):
+    text = text.upper()
+
     patterns = [
-        r"\b[A-Z0-9]{10,20}\b",
-        r"\bPUBG[A-Z0-9]{4,16}\b",
-        r"\bMLBB[A-Z0-9]{4,16}\b",
-        r"\bCDK[A-Z0-9]{4,16}\b",
-        r"\b[A-Z]{3,6}-[A-Z0-9]{4,10}\b",
+        r"\b[A-Z0-9]{16}\b",
+        r"\b[A-Z0-9]{15}\b",
+        r"\bPUBG[A-Z0-9]{6,12}\b",
+        r"\bMLBB[A-Z0-9]{6,12}\b",
     ]
 
     found = set()
 
-    text = text.upper()
+    for pattern in patterns (
+        found.update(re.findall(pattern, text))
 
-    for pattern in patterns:
-        for code in re.findall(pattern, text):
-            found.add(code)
+    return sorted(found)
+def check_sites():
+    message = "📰 PUBG + MLBB Yangiliklari\n\n"
 
-    return list(found)
+    for name, url in SITES.items():
+        try:
+            html = get_page(url)
+            title = get_title(html)
+
+            message += (
+                f"📢 {name}\n"
+                f"{title}\n"
+                f"{url}\n\n"
+            )
+
+        except Exception as e:
+            message += (
+                f"❌ {name}\n"
+                f"{e}\n\n"
+            )
+
+    if message != "📰 PUBG + MLBB Yangiliklari\n\n":
+        send_message(message)
+def check_codes():
+    message = "🎁 Yangi redeem kodlar\n\n"
+
+    for name, url in SITES.items():
+        try:
+            html = get_page(url)
+            text = BeautifulSoup(html, "html.parser").get_text(" ")
+
+            codes = find_codes(text)
+
+            new_codes = []
+
+            for code in codes:
+                if is_new_code(code):
+                    new_codes.append(code)
+
+            if new_codes:
+                message += f"📢 {name}\n"
+
+                for code in new_codes:
+                    message += f"🔑 {code}\n"
+
+                message += f"🌐 {url}\n\n"
+
+        except Exception as e:
+            message += f"❌ {name}\n{e}\n\n"
+
+    if message != "🎁 Yangi redeem kodlar\n\n":
+        send_message(message)
 def check_rss():
     for url in RSS_SOURCES:
         try:
@@ -111,6 +175,9 @@ def check_rss():
 
                 codes = find_codes(text)
 
+                if not codes:
+                    continue
+
                 for code in codes:
                     if is_new_code(code):
                         send_message(
@@ -121,79 +188,24 @@ def check_rss():
                         )
 
         except Exception as e:
-            print(e)
-def is_new_code(code):
-    codes = load_json(CODES_FILE, [])
-
-    if code in codes:
-        return False
-
-    codes.append(code)
-    save_json(CODES_FILE, codes)
-
-    return True
-
-
-def check_sites():
-    message = "📰 PUBG + MLBB Yangiliklari\n\n"
-
-    for name, url in SITES.items():
-        try:
-            html = get_page(url)
-            title = get_title(html)
-
-            message += f"📢 {name}\n"
-            message += f"{title}\n"
-            message += f"{url}\n\n"
-
-        except Exception as e:
-            message += f"❌ {name}\n{e}\n\n"
-
-    send_message(message)
-def check_codes():
-    message = "🎁 Redeem kodlarni tekshirish\n\n"
-
-    for name, url in SITES.items():
-        try:
-            html = get_page(url)
-
-            text = BeautifulSoup(html, "html.parser").get_text(" ")
-
-            codes = find_codes(text)
-
-            if not codes:
-                continue
-
-            new_codes = []
-
-            for code in codes:
-                if is_new_code(code):
-                    new_codes.append(code)
-            if new_codes:
-                message += f"✅ {name}\n"
-
-                for code in new_codes:
-                    message += f"🎫 {code}\n"
-
-                message += f"🌐 {url}\n\n"
-
-        except Exception as e:
-            message += f"❌ {name}\n"
-            message += f"{e}\n\n"
-
-    if message != "🎁 Redeem kodlarni tekshirish\n\n":
-        send_message(message)
-
+            print(f"RSS xatosi: {e}")
 import time
 
-def main():
-    send_message("🤖 Bot ishga tushdi")
 
-    try:
-        check_codes()
-        check_rss()
-    except Exception as e:
-        send_message(f"❌ Xatolik:\n{e}")
+def main():
+    send_message("🤖 Redeem Code Bot ishga tushdi!")
+
+    while True:
+        try:
+            check_codes()
+            check_rss()
+            check_sites()
+
+        except Exception as e:
+            send_message(f"❌ Xatolik:\n{e}")
+
+        time.sleep(CONFIG.get("check_interval", 900))
+
 
 if __name__ == "__main__":
     main()
