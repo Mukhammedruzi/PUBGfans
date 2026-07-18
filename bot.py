@@ -99,8 +99,6 @@ def find_codes(text):
 
     return list(found)
 def check_rss():
-    message = "📰 RSS yangiliklari\n\n"
-
     for url in RSS_SOURCES:
         try:
             feed = feedparser.parse(url)
@@ -108,37 +106,22 @@ def check_rss():
             for post in feed.entries[:5]:
                 text = (
                     post.title + " " +
-                    getattr(post, "summary", "") + " " +
-                    post.link
-                ).lower()
-
-                if not any(word.lower() in text for word in KEYWORDS):
-                    continue
-
-                codes = find_codes(
-                    post.title + " " +
                     getattr(post, "summary", "")
                 )
 
-                if codes:
-                    for code in codes:
-                        if is_new_code(code):
-                            message += (
-                                f"🎁 Yangi redeem kod topildi!\n"
-                                f"🔑 {code}\n"
-                                f"📰 {post.title}\n"
-                                f"🔗 {post.link}\n\n"
-                            )
-                else:
-                    message += (
-                        f"📰 {post.title}\n"
-                        f"🔗 {post.link}\n\n"
-                    )
+                codes = find_codes(text)
+
+                for code in codes:
+                    if is_new_code(code):
+                        send_message(
+                            f"🎁 Yangi redeem kod topildi!\n\n"
+                            f"🔑 {code}\n"
+                            f"📰 {post.title}\n"
+                            f"🔗 {post.link}"
+                        )
 
         except Exception as e:
-            message += f"❌ RSS xatosi:\n{url}\n{e}\n\n"
-
-    send_message(message)
+            print(e)
 def is_new_code(code):
     codes = load_json(CODES_FILE, [])
 
