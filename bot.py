@@ -200,8 +200,6 @@ def check_codes():
 
     if message != "🎁 Redeem kodlarni tekshirish\n\n":
         send_message(message)
-if message != "🎁 Redeem kodlarni tekshirish\n\n":
-    send_message(message)
 
 import time
 
