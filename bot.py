@@ -148,6 +148,8 @@ def check_codes():
     if message != "🎁 Yangi redeem kodlar\n\n":
         send_message(message)
 def check_rss():
+    seen = load_json("rss_seen.json", [])
+
     for url in RSS_SOURCES:
         try:
             feed = feedparser.parse(url)
@@ -155,23 +157,31 @@ def check_rss():
             if not feed.entries:
                 continue
 
-            post = feed.entries[0]  
-            post_id = post.link
-            if not is_new_code(post_id):
-               continue  
+            post = feed.entries[0]
+
+            post_id = getattr(post, "id", post.link)
+
+            if post_id in seen:
+                continue
+
+            seen.append(post_id)
+            save_json("rss_seen.json", seen)
+
             text = (
-                post.title + " " +
+                getattr(post, "title", "") + " " +
                 getattr(post, "summary", "")
             )
 
-            codes = list(set(find_codes(text)))
+            codes = find_codes(text)
 
-            for code in codes:
-                if is_new_code(code):
-                    send_message(
-                        f"🎁 YANGI REDEEM KOD!\n\n"
-                        f"🔑 {code}"
-                    )
+            if codes:
+                for code in codes:
+                    if is_new_code(code):
+                        send_message(
+                            f"🎁 YANGI REDEEM KOD!\n\n"
+                            f"🔑 {code}\n"
+                            f"🌐 {post.link}"
+                        )
 
         except Exception as e:
             print(f"RSS xatosi: {e}")
