@@ -194,8 +194,6 @@ import time
 
 def main():
     send_message("🤖 Redeem Code Bot ishga tushdi!")
-
-    while True:
         try:
             check_codes()
             check_rss()
@@ -203,9 +201,5 @@ def main():
 
         except Exception as e:
             send_message(f"❌ Xatolik:\n{e}")
-
-        time.sleep(CONFIG.get("check_interval", 900))
-
-
 if __name__ == "__main__":
     main()
