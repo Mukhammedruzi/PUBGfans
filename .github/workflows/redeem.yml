@@ -36,4 +36,4 @@ jobs:
         run: |
           git add codes.json
           git diff --cached --quiet || git commit -m "Update codes database"
-          git push
+          git push origin main
