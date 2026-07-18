@@ -12,28 +12,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 DATA_FILE = "data.json"
 CODES_FILE = "codes.json"
 
-SITES = {
-    "PUBG Esports": "https://esports.pubgmobile.com/",
-    "MLBB News": "https://m.mobilelegends.com/en/news",
-    "MLBB Events": "https://m.mobilelegends.com/en/events"
-}
 
-RSS_SOURCES = [
-    "https://www.reddit.com/r/PUBGMobile/.rss",
-    "https://www.reddit.com/r/MobileLegendsGame/.rss"
-]
-
-KEYWORDS = [
-    "redeem",
-    "redeem code",
-    "gift code",
-    "exchange code",
-    "cdkey",
-    "gift",
-    "reward",
-    "coupon",
-    "兑换码"
-]
 
 
 def send_message(text):
@@ -62,8 +41,26 @@ def load_json(filename, default):
 def save_json(filename, data):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
+def load_config():
+    return load_json("config.json", {})
 
+def load_sources():
+    return load_json("sources.json", {})
 
+def load_keywords():
+    data = load_json("keywords.json", {})
+    return data.get("keywords", [])
+CONFIG = load_config()
+SOURCES = load_sources()
+
+SITES = {
+    item["name"]: item["url"]
+    for item in SOURCES.get("websites", [])
+}
+
+RSS_SOURCES = SOURCES.get("rss", [])
+
+KEYWORDS = load_keywords()
 def get_page(url):
     headers = {
         "User-Agent": "Mozilla/5.0"
@@ -87,7 +84,9 @@ def find_codes(text):
     patterns = [
         r"\b[A-Z0-9]{10,20}\b",
         r"\bPUBG[A-Z0-9]{4,16}\b",
-        r"\bMLBB[A-Z0-9]{4,16}\b"
+        r"\bMLBB[A-Z0-9]{4,16}\b",
+        r"\bCDK[A-Z0-9]{4,16}\b",
+        r"\b[A-Z]{3,6}-[A-Z0-9]{4,10}\b",
     ]
 
     found = set()
@@ -99,6 +98,47 @@ def find_codes(text):
             found.add(code)
 
     return list(found)
+def check_rss():
+    message = "📰 RSS yangiliklari\n\n"
+
+    for url in RSS_SOURCES:
+        try:
+            feed = feedparser.parse(url)
+
+            for post in feed.entries[:5]:
+                text = (
+                    post.title + " " +
+                    getattr(post, "summary", "") + " " +
+                    post.link
+                ).lower()
+
+                if not any(word.lower() in text for word in KEYWORDS):
+                    continue
+
+                codes = find_codes(
+                    post.title + " " +
+                    getattr(post, "summary", "")
+                )
+
+                if codes:
+                    for code in codes:
+                        if is_new_code(code):
+                            message += (
+                                f"🎁 Yangi redeem kod topildi!\n"
+                                f"🔑 {code}\n"
+                                f"📰 {post.title}\n"
+                                f"🔗 {post.link}\n\n"
+                            )
+                else:
+                    message += (
+                        f"📰 {post.title}\n"
+                        f"🔗 {post.link}\n\n"
+                    )
+
+        except Exception as e:
+            message += f"❌ RSS xatosi:\n{url}\n{e}\n\n"
+
+    send_message(message)
 def is_new_code(code):
     codes = load_json(CODES_FILE, [])
 
@@ -127,3 +167,52 @@ def check_sites():
             message += f"❌ {name}\n{e}\n\n"
 
     send_message(message)
+def check_codes():
+    message = "🎁 Redeem kodlarni tekshirish\n\n"
+
+    for name, url in SITES.items():
+        try:
+            html = get_page(url)
+
+            text = BeautifulSoup(html, "html.parser").get_text(" ")
+
+            codes = find_codes(text)
+
+            if not codes:
+                continue
+
+            new_codes = []
+
+            for code in codes:
+                if is_new_code(code):
+                    new_codes.append(code)
+            if new_codes:
+                message += f"✅ {name}\n"
+
+                for code in new_codes:
+                    message += f"🎫 {code}\n"
+
+                message += f"🌐 {url}\n\n"
+
+        except Exception as e:
+            message += f"❌ {name}\n"
+            message += f"{e}\n\n"
+
+    if message != "🎁 Redeem kodlarni tekshirish\n\n":
+        send_message(message)
+import time
+
+def main():
+    send_message("🤖 Bot ishga tushdi")
+
+    while True:
+        try:
+            check_codes()
+            check_rss()
+        except Exception as e:
+            send_message(f"❌ Xatolik:\n{e}")
+
+        time.sleep(CONFIG.get("check_interval", 300))
+
+if __name__ == "__main__":
+    main()
