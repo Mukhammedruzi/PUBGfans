@@ -98,6 +98,7 @@ def is_new_code(code):
     save_json(CODES_FILE, codes)
 
     return True
+    
 def find_codes(text):
     import re
 
@@ -179,13 +180,10 @@ import time
 
 def main():
     send_message("🤖 Redeem Code Bot ishga tushdi!")
-    
+
     try:
         check_codes()
         check_rss()
-        check_sites()
 
     except Exception as e:
-            send_message(f"❌ Xatolik:\n{e}")
-if __name__ == "__main__":
-    main()
+        send_message(f"❌ Xatolik:\n{e}")
