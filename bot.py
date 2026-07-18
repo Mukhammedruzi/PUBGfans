@@ -170,23 +170,21 @@ def check_rss():
             if not feed.entries:
                 continue
 
-            for post in feed.entries[:5]:
-                text = (
-                    post.title + " " +
-                    getattr(post, "summary", "")
-                )
+            post = feed.entries[0]   # faqat eng yangi post
 
-                codes = find_codes(text)
+            text = (
+                post.title + " " +
+                getattr(post, "summary", "")
+            )
 
-                if not codes:
-                    continue
+            codes = list(set(find_codes(text)))
 
-                for code in codes:
-                    if is_new_code(code):
-                        send_message(
-                            f"🎁 YANGI REDEEM KOD TOPILDI!\n\n"
-                            f"🔑 Kod: {code}\n\n"
-                        )
+            for code in codes:
+                if is_new_code(code):
+                    send_message(
+                        f"🎁 YANGI REDEEM KOD!\n\n"
+                        f"🔑 {code}"
+                    )
 
         except Exception as e:
             print(f"RSS xatosi: {e}")
