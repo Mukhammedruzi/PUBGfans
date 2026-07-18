@@ -173,8 +173,8 @@ def check_rss():
                 continue
 
             post = feed.entries[0]  
-           post_id = post.link
-           if not is_new_code(post_id):
+            post_id = post.link
+            if not is_new_code(post_id):
                continue  
             text = (
                 post.title + " " +
