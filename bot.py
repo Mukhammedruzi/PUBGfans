@@ -28,7 +28,12 @@ def save_json(filename, data):
     with open(filename, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+import os
 
+if not os.path.exists(CODES_FILE):
+    with open(CODES_FILE, "w") as f:
+        f.write("[]")
+        
 def load_config():
     return load_json(CONFIG_FILE, {})
 
