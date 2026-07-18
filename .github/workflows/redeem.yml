@@ -32,8 +32,8 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: codes.json ni saqlash
+      - name: codes.json va rss_seen.json ni saqlash
         run: |
-          git add codes.json
-          git diff --cached --quiet || git commit -m "Update codes database"
+          git add codes.json rss_seen.json
+          git diff --cached --quiet || git commit -m "Update database"
           git push origin main
