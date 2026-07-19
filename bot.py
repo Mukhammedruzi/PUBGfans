@@ -329,8 +329,7 @@ def check_sites():
 
                     send_message("🌐 Sayt avtomatik yangilandi.")
         except Exception as e:
-
-        print(f"Xatolik ({site['name']}): {e}")
+            print(f"Xatolik ({site['name']}): {e}")
 # ===============================
 # Asosiy funksiya
 # ===============================
