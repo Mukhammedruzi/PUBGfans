@@ -2,202 +2,143 @@ import os
 import re
 import json
 import requests
-import feedparser
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
-CONFIG_FILE = "config.json"
-SOURCES_FILE = "sources.json"
-KEYWORDS_FILE = "keywords.json"
 CODES_FILE = "codes.json"
 REDEEM_FILE = "redeem.json"
-def load_json(filename, default):
-    if os.path.exists(filename):
-        try:
-            with open(filename, "r", encoding="utf-8") as f:
-                return json.load(f)
-        except Exception:
-            return default
-    return default
-
-
-def save_json(filename, data):
-    with open(filename, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-import os
-
-if not os.path.exists(CODES_FILE):
-    with open(CODES_FILE, "w") as f:
-        f.write("[]")
-        
-def load_config():
-    return load_json(CONFIG_FILE, {})
-
-
-def load_sources():
-    return load_json(SOURCES_FILE, {})
-
-
-def load_keywords():
-    data = load_json(KEYWORDS_FILE, {})
-    return data.get("keywords", [])
-
-CONFIG = load_config()
-SOURCES = load_sources()
-KEYWORDS = load_keywords()
 
 SITES = {
-    item["name"]: item["url"]
-    for item in SOURCES.get("websites", [])
+    "PUBG": "https://www.pubgmobile.com/news.shtml",
+    "MLBB": "https://m.mobilelegends.com/en/news"
 }
-RSS_SOURCES = SOURCES.get("rss", [])
-RSS_FILE = "rss_seen.json"
 
-if not os.path.exists(RSS_FILE):
-    with open(RSS_FILE, "w") as f:
-        f.write("[]")
+HEADERS = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+if not os.path.exists(CODES_FILE):
+    with open(CODES_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+
+if not os.path.exists(REDEEM_FILE):
+    with open(REDEEM_FILE, "w", encoding="utf-8") as f:
+        json.dump([], f)
+
+
+def load_json(file):
+    with open(file, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def save_json(file, data):
+    with open(file, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+
+
 def send_message(text):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     requests.post(
-        url,
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
         json={
             "chat_id": CHAT_ID,
-            "text": f"{text}\n\n🕒 {now}"
+            "text": text
         },
         timeout=20
     )
-def get_page(url):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (RedeemBot)"
-    }
 
-    response = requests.get(url, headers=headers, timeout=20)
+
+def find_codes(text):
+    pattern = r"\b(?=.*[A-Z])(?=.*\d)[A-Z0-9]{10,16}\b"
+    return sorted(set(re.findall(pattern, text.upper())))
+def get_page(url):
+    response = requests.get(url, headers=HEADERS, timeout=20)
     response.raise_for_status()
     return response.text
 
 
-def get_title(html):
-    soup = BeautifulSoup(html, "html.parser")
-
-    if soup.title:
-        return soup.title.get_text(strip=True)
-
-    return "Sarlavha topilmadi"
-
-
 def is_new_code(code):
-    codes = load_json(CODES_FILE, [])
+    codes = load_json(CODES_FILE)
 
     if code in codes:
         return False
 
     codes.append(code)
     save_json(CODES_FILE, codes)
-
     return True
-    
-def find_codes(text):
-    import re
 
-    text = text.upper()
 
-    patterns = [
-        r"\b[A-Z0-9]{10,16}\b",
-        r"\bPUBG[A-Z0-9]{4,12}\b",
-        r"\bMLBB[A-Z0-9]{4,12}\b",
-    ]
+def save_redeem(code, source):
+    data = load_json(REDEEM_FILE)
 
-    found = set()
+    data.append({
+        "code": code,
+        "source": source,
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    })
 
-    for pattern in patterns:
-        for code in re.findall(pattern, text):
-            if any(ch.isdigit() for ch in code):
-                found.add(code)
+    save_json(REDEEM_FILE, data)
 
-    return sorted(found)
-def check_codes():
-    message = "🎁 Yangi redeem kodlar\n\n"
 
+def check_sites():
     for name, url in SITES.items():
         try:
             html = get_page(url)
-            text = BeautifulSoup(html, "html.parser").get_text(" ")
+
+            text = BeautifulSoup(
+                html,
+                "html.parser"
+            ).get_text(" ")
 
             codes = find_codes(text)
 
-            new_codes = []
+            for code in
+def update_website():
+    data = load_json(REDEEM_FILE)
 
-            for code in codes:
-                if is_new_code(code):
-                    new_codes.append(code)
+    data = sorted(
+        data,
+        key=lambda x: x["time"],
+        reverse=True
+    )
 
-            if new_codes:
-                message += f"📢 {name}\n"
-
-                for code in new_codes:
-                    message += f"🔑 {code}\n"
-
-                message += f"🌐 {url}\n\n"
-
-        except Exception as e:
-            message += f"❌ {name}\n{e}\n\n"
-
-    if message != "🎁 Yangi redeem kodlar\n\n":
-        send_message(message)
-def check_rss():
-    seen = load_json("rss_seen.json", [])
-
-    for url in RSS_SOURCES:
-        try:
-            feed = feedparser.parse(url)
-
-            if not feed.entries:
-                continue
-
-            post = feed.entries[0]
-
-            post_id = getattr(post, "id", post.link)
-
-            if post_id in seen:
-                continue
-
-            seen.append(post_id)
-            save_json("rss_seen.json", seen)
-
-            text = (
-                getattr(post, "title", "") + " " +
-                getattr(post, "summary", "")
-            )
-
-            codes = find_codes(text)
-
-            if codes:
-                for code in codes:
-                    if is_new_code(code):
-                        send_message(
-                            f"🎁 YANGI REDEEM KOD!\n\n"
-                            f"🔑 {code}\n"
-                            f"🌐 {post.link}"
-                        )
-
-        except Exception as e:
-            print(f"RSS xatosi: {e}")
-import time
+    save_json(REDEEM_FILE, data)
 
 
-def main():
+def clean_old_codes():
+    data = load_json(REDEEM_FILE)
+
+    unique = []
+    seen = set()
+
+    for item in data:
+        if item["code"] not in seen:
+            unique.append(item)
+            seen.add(item["code"])
+
+    save_json(REDEEM_FILE, unique)
+
+
+def run_bot():
     send_message("🤖 Redeem Code Bot ishga tushdi!")
 
-    try:
-        check_codes()
-        check_rss()
+    check_sites()
 
+    clean_old_codes()
+
+    update_website()
+
+    send_message("✅ Tekshirish yakunlandi.")
+def main():
+    try:
+        run_bot()
     except Exception as e:
-        send_message(f"❌ Xatolik:\n{e}")
+        send_message(
+            f"❌ Bot xatolikka uchradi!\n\n{e}"
+        )
+
+
+if __name__ == "__main__":
+    main()
