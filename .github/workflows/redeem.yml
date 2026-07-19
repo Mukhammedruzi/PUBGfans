@@ -1,39 +1,39 @@
-name: Kod botini faollashtirish
+name: Redeem Bot
 
 on:
   workflow_dispatch:
   schedule:
     - cron: "*/10 * * * *"
+
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Repositoryni yuklash
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Python o'rnatish
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Kutubxonalarni o'rnatish
+      - name: Install packages
         run: |
-          pip install requests beautifulsoup4 feedparser
-  
-      - name: Botni ishga tushirish
+          pip install requests beautifulsoup4
+
+      - name: Run bot
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
         run: |
           python bot.py
-      - name: Git konfiguratsiyasi
+
+      - name: Commit updated files
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
-      - name: codes.json va rss_seen.json ni saqlash
-        run: |
-          git add codes.json rss_seen.json
-          git diff --cached --quiet || git commit -m "Update database"
-          git push origin main
+          git add codes.json redeem.json
+          git diff --cached --quiet || git commit -m "Update redeem codes"
+          git push
