@@ -27,14 +27,14 @@ SOURCES = [
     {
         "name": "PUBG Mobile Events",
         "game": "PUBG",
-        "url""
+        "url"
 "https://www.pubgmobile.com"
     },
     {
          "name": "MLBB News",
-         "game": "MBLL",
+         "game": "MLBB"
          "url":
-"https"//m.mobilelegends.com/en/news"
+"https://m.mobilelegends.com/en/news"
     }
 ]
 # ===============================
