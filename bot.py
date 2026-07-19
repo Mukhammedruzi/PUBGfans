@@ -10,7 +10,7 @@ CHAT_ID = os.getenv("CHAT_ID")
 
 CODES_FILE = "codes.json"
 REDEEM_FILE = "redeem.json"
-
+LAST_NEWS_FILE = "last_news.json"
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
@@ -18,23 +18,52 @@ HEADERS = {
     )
 }
 SOURCES = [
+
+    # =========================
+    # PUBG MOBILE
+    # =========================
+
     {
         "name": "PUBG Mobile News",
         "game": "PUBG",
         "url": "https://www.pubgmobile.com/news.shtml"
     },
+
     {
-        "name": "PUBG Mobile Events",
+        "name": "PUBG Mobile",
         "game": "PUBG",
-        "url": "https://www.pubgmobile.com"
+        "url": "https://www.pubgmobile.com/"
     },
+
+    {
+        "name": "PUBG Mobile Security",
+        "game": "PUBG",
+        "url": "https://www.pubgmobile.com/security.shtml"
+    },
+
+    # =========================
+    # MOBILE LEGENDS
+    # =========================
+
     {
         "name": "MLBB News",
         "game": "MLBB",
         "url": "https://m.mobilelegends.com/en/news"
-    }
-]
+    },
 
+    {
+        "name": "MLBB Events",
+        "game": "MLBB",
+        "url": "https://m.mobilelegends.com/en/events"
+    },
+
+    {
+        "name": "MLBB Home",
+        "game": "MLBB",
+        "url": "https://m.mobilelegends.com/"
+    }
+
+]
 # ===============================
 # JSON bilan ishlash
 # ===============================
@@ -58,7 +87,8 @@ if not os.path.exists(CODES_FILE):
 if not os.path.exists(REDEEM_FILE):
     save_json(REDEEM_FILE, [])
 
-
+if not os.path.exists(LAST_NEWS_FILE):
+    save_json(LAST_NEWS_FILE, {})
 # ===============================
 # Telegram
 # ===============================
@@ -151,6 +181,24 @@ def save_redeem(code, source, game):
 
     save_json(REDEEM_FILE, data)
 # ===============================
+# Oxirgi yangilikni saqlash
+# ===============================
+
+def get_last_news(site_name):
+
+    data = load_json(LAST_NEWS_FILE, {})
+
+    return data.get(site_name)
+
+
+def set_last_news(site_name, value):
+
+    data = load_json(LAST_NEWS_FILE, {})
+
+    data[site_name] = value
+
+    save_json(LAST_NEWS_FILE, data)
+# ===============================
 # Saytlarni tekshirish
 # ===============================
 
@@ -197,12 +245,12 @@ def check_sites():
 
 def main():
 
-    send_message("🤖 Redeem bot ishga tushdi.")
+    send_message(
+        "🤖 Redeem Bot ishga tushdi.\n"
+        "👀 Yangi redeem kodlar kuzatilmoqda..."
+    )
 
     check_sites()
-
-    send_message("✅ Tekshirish yakunlandi.")
-
 
 # ===============================
 # Ishga tushirish
