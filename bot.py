@@ -17,7 +17,6 @@ HEADERS = {
         "AppleWebKit/537.36 Chrome/138.0 Safari/537.36"
     )
 }
-
 SOURCES = [
     {
         "name": "PUBG Mobile News",
@@ -27,16 +26,15 @@ SOURCES = [
     {
         "name": "PUBG Mobile Events",
         "game": "PUBG",
-        "url"
-"https://www.pubgmobile.com"
+        "url": "https://www.pubgmobile.com"
     },
     {
-         "name": "MLBB News",
-         "game": "MLBB"
-         "url":
-"https://m.mobilelegends.com/en/news"
+        "name": "MLBB News",
+        "game": "MLBB",
+        "url": "https://m.mobilelegends.com/en/news"
     }
 ]
+
 # ===============================
 # JSON bilan ishlash
 # ===============================
