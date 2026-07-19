@@ -26,7 +26,17 @@ SOURCES = [
     },
     {
         "name": "PUBG Mobile Events",
-        "game": "
+        "game": "PUBG",
+        "url""
+"https://www.pubgmobile.com"
+    },
+    {
+         "name": "MLBB News",
+         "game": "MBLL",
+         "url":
+"https"//m.mobilelegends.com/en/news"
+    }
+]
 # ===============================
 # JSON bilan ishlash
 # ===============================
@@ -77,7 +87,7 @@ def get_html(url):
 
     r = requests.get(
         url,
-        headers=HEADERS.
+        headers=HEADERS,
         timeout=30
     )
     r.raise_for_status()
@@ -123,7 +133,7 @@ def is_new_code(code):
 
     codes.append(code)
 
-    save_json(CODES_FILE. codes)
+    save_json(CODES_FILE, codes)
     return True
 
 # ===============================
