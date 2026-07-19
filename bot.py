@@ -319,7 +319,7 @@ def check_sites():
                         f"🔑 Kod: {code}\n"
                         f"🌐 Manba: {site['name']}"
                         )
-                        html = build_redeem_page()
+                    html = build_redeem_page()
                         update_github_file(
                              "redeem.html",
                              html,
