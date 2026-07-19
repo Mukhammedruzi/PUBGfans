@@ -2,109 +2,271 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redeem Kodlar</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PUBG & MLBB Redeem Codes</title>
 
 <style>
-body{
-background:#111;
-color:white;
-font-family:Arial,sans-serif;
-text-align:center;
+
+*{
 margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#101010;
+color:#fff;
 padding:20px;
 }
 
-h1{
-color:#ffcc00;
+.container{
+max-width:900px;
+margin:auto;
 }
 
-h2{
-color:#00d4ff;
-margin-top:30px;
+h1{
+text-align:center;
+color:#ffd700;
+margin-bottom:10px;
+}
+
+.update{
+text-align:center;
+color:#bbb;
+margin-bottom:25px;
+}
+
+.search{
+width:100%;
+padding:12px;
+font-size:16px;
+border:none;
+border-radius:8px;
+margin-bottom:25px;
+outline:none;
+}
+
+.section{
+margin-bottom:35px;
+}
+
+.section h2{
+color:#00d9ff;
+margin-bottom:15px;
+}
+
+.code-box{
+background:#1c1c1c;
+border:1px solid #333;
+border-radius:10px;
+padding:15px;
+margin-bottom:15px;
+box-shadow:0 0 10px rgba(0,0,0,.4);
+}
+
+.game{
+font-size:13px;
+color:#ffcc00;
+margin-bottom:8px;
 }
 
 .code{
-background:#222;
-border:2px solid #ffcc00;
-border-radius:10px;
-padding:15px;
-margin:15px auto;
-max-width:350px;
+font-size:20px;
+font-weight:bold;
+word-break:break-all;
+}
+
+.source{
+margin-top:8px;
+font-size:13px;
+color:#aaa;
 }
 
 button{
-background:#ffcc00;
-color:black;
+margin-top:12px;
+padding:10px 18px;
+background:#ffd700;
 border:none;
-padding:10px 20px;
 border-radius:8px;
 font-weight:bold;
 cursor:pointer;
 }
 
-.button{
-display:inline-block;
-margin-top:25px;
-padding:15px 30px;
-background:#ffcc00;
-color:black;
-text-decoration:none;
-border-radius:10px;
-font-weight:bold;
+.empty{
+text-align:center;
+padding:40px;
+color:#999;
+display:none;
 }
+
+.footer{
+margin-top:40px;
+text-align:center;
+color:#777;
+font-size:13px;
+}
+
 </style>
-
-<script>
-function copyCode(code){
-navigator.clipboard.writeText(code);
-alert("✅ Nusxalandi: " + code);
-}
-</script>
-
 </head>
 
 <body>
 
-<h1>🎁 PUBG & MLBB Redeem Kodlari</h1>
+<div class="container">
 
-<p style="color:#aaa;">📅 Oxirgi yangilanish: 17.07.2026</p>
+<h1>🎁 PUBG & MLBB Redeem Codes</h1>
 
-<h2>🎮 PUBG Mobile</h2>
-
-<div class="code">
-PUBGM8TH
-<br><br>
-<button onclick="copyCode('PUBGM8TH')">📋 Nusxalash</button>
+<div class="update" id="updateTime">
+Yuklanmoqda...
 </div>
 
-<div class="code">
-PUBGGAMECODECITY
-<br><br>
-<button onclick="copyCode('PUBGGAMECODECITY')">📋 Nusxalash</button>
+<input
+class="search"
+id="search"
+type="text"
+placeholder="Kod qidirish..."
+>
+
+<div class="section">
+
+<h2>Redeem kodlar</h2>
+
+<div id="codes"></div>
+
+<div class="empty" id="empty">
+
+Hozircha redeem kod topilmadi.
+
 </div>
 
-<div class="code">
-PUBGMOBGIFTFREE
-<br><br>
-<button onclick="copyCode('PUBGMOBGIFTFREE')">📋 Nusxalash</button>
 </div>
 
-<h2>⚔️ Mobile Legends</h2>
+<div class="footer">
 
-<div class="code">
-fa79ta3xz
-<br><br>
-<button onclick="copyCode('fa79ta3xz')">📋 Nusxalash</button>
+© Muhammadrozi Gaming
+
 </div>
 
-<div class="code">
-k0m3fvyza
-<br><br>
-<button onclick="copyCode('k0m3fvyza')">📋 Nusxalash</button>
-</div>
-<div class="code">
-ds720ayz9
-<br><br>
-<button onclick="copyCode('ds720ayz9')">📋 Nusxalash</button>
-</div>
+<script>
+const codesDiv = document.getElementById("codes");
+const emptyDiv = document.getElementById("empty");
+const updateTime = document.getElementById("updateTime");
+const search = document.getElementById("search");
+
+let allCodes = [];
+
+function copyCode(code){
+    navigator.clipboard.writeText(code);
+    alert("✅ Nusxalandi: " + code);
+}
+
+function render(list){
+
+    codesDiv.innerHTML = "";
+
+    if(list.length === 0){
+        emptyDiv.style.display = "block";
+        return;
+    }
+
+    emptyDiv.style.display = "none";
+
+    list.forEach(item=>{
+
+        codesDiv.innerHTML += `
+        <div class="code-box">
+
+            <div class="game">${item.game}</div>
+
+            <div class="code">${item.code}</div>
+
+            <div class="source">
+                ${item.source}
+            </div>
+
+            <button onclick="copyCode('${item.code}')">
+                📋 Nusxalash
+            </button>
+
+        </div>
+        `;
+
+    });
+
+}
+
+fetch("redeem.json")
+
+.then(r=>r.json())
+
+.then(data=>{
+
+    allCodes = data;
+
+    render(allCodes);
+
+    if(data.length){
+
+        updateTime.innerHTML =
+        "📅 Oxirgi yangilanish: " +
+        data[0].time;
+
+    }
+
+});
+
+search.addEventListener("input",()=>{
+
+    let key = search.value.toLowerCase();
+
+    let filtered = allCodes.filter(item=>
+
+        item.code.toLowerCase().includes(key) ||
+
+        item.game.toLowerCase().includes(key)
+
+    );
+
+    render(filtered);
+
+});
+.catch(error=>{
+
+    console.log(error);
+
+    updateTime.innerHTML =
+    "❌ redeem.json yuklanmadi.";
+
+});
+
+setInterval(()=>{
+
+    fetch("redeem.json?time="+Date.now())
+
+    .then(r=>r.json())
+
+    .then(data=>{
+
+        allCodes = data;
+
+        render(allCodes);
+
+        if(data.length){
+
+            updateTime.innerHTML =
+            "📅 Oxirgi yangilanish: " +
+            data[0].time;
+
+        }
+
+    })
+
+    .catch(()=>{});
+
+},60000);
+
+</script>
+
+</body>
+
+</html>
