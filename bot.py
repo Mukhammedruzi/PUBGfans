@@ -320,13 +320,12 @@ def check_sites():
                         f"🌐 Manba: {site['name']}"
                         )
                         html = build_redeem_page()
-
                         update_github_file(
                              "redeem.html",
                              html,
-                        f"Redeem update: {code}"
+                             f"Redeem update: {code}"
                     )
-
+                    
                     send_message("🌐 Sayt avtomatik yangilandi.")
         except Exception as e:
             print(f"Xatolik ({site['name']}): {e}")
