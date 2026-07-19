@@ -94,7 +94,9 @@ def check_sites():
 
             codes = find_codes(text)
 
-            for code in
+            for code in codes:
+                if is_new_code(code):
+                    save_redeem(code, name) 
 def update_website():
     data = load_json(REDEEM_FILE)
 
