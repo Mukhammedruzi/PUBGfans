@@ -204,7 +204,88 @@ def set_last_news(site_name, value):
 # ===============================
 # Saytlarni tekshirish
 # ===============================
+# ===============================
+# GitHub faylini yangilash
+# ===============================
 
+def github_headers():
+    return {
+        "Authorization": f"token {GH_TOKEN}",
+        "Accept": "application/vnd.github+json"
+    }
+
+
+def update_github_file(path, content, message):
+
+    url = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{path}"
+
+    r = requests.get(url, headers=github_headers(), timeout=30)
+    r.raise_for_status()
+
+    data = r.json()
+
+    sha = data["sha"]
+
+    encoded = base64.b64encode(
+        content.encode("utf-8")
+    ).decode()
+
+    requests.put(
+        url,
+        headers=github_headers(),
+        json={
+            "message": message,
+            "content": encoded,
+            "sha": sha
+        },
+        timeout=30
+    ).raise_for_status()
+# ===============================
+# redeem.html yaratish
+# ===============================
+
+def build_redeem_page():
+
+    data = load_json(REDEEM_FILE, [])
+
+    html = """<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Redeem Codes</title>
+</head>
+<body>
+
+<h1>🎁 Eng so'nggi Redeem Kodlar</h1>
+
+<table border="1" cellpadding="8">
+<tr>
+<th>O'yin</th>
+<th>Kod</th>
+<th>Manba</th>
+<th>Vaqt</th>
+</tr>
+"""
+
+    for item in data:
+
+        html += f"""
+<tr>
+<td>{item['game']}</td>
+<td>{item['code']}</td>
+<td>{item['source']}</td>
+<td>{item['time']}</td>
+</tr>
+"""
+
+    html += """
+</table>
+
+</body>
+</html>
+"""
+
+    return html
 def check_sites():
 
     for site in SOURCES:
@@ -237,11 +318,19 @@ def check_sites():
                         f"🎮 O'yin: {site['game']}\n"
                         f"🔑 Kod: {code}\n"
                         f"🌐 Manba: {site['name']}"
+                        )
+                        html = build_redeem_page()
+
+                        update_github_file(
+                             "redeem.html",
+                             html,
+                        f"Redeem update: {code}"
                     )
 
+                    send_message("🌐 Sayt avtomatik yangilandi.")
         except Exception as e:
 
-            print(f"Xatolik ({site['name']}): {e}")
+        print(f"Xatolik ({site['name']}): {e}")
 # ===============================
 # Asosiy funksiya
 # ===============================
