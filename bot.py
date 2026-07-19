@@ -4,7 +4,10 @@ import json
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-
+import base64
+GH_TOKEN = os.getenv("GH_TOKEN")
+GITHUB_USER = "Mukhammedruzi"
+GITHUB_REPO = "PUBGfans"
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 CHAT_ID = os.getenv("CHAT_ID")
 
