@@ -353,30 +353,30 @@ def check_sites():
                     f"🔗 {site['url']}"
             )
 
-    if site["game"] == "PUBG":
-        save_news(title, site["url"])
+            if site["game"] == "PUBG":
+                save_news(title, site["url"])
 
-        news_data = json.dumps(
-        load_json("news.json", []),
-        ensure_ascii=False,
-        indent=2
-    )
+                news_data = json.dumps(
+                load_json("news.json", []),
+                ensure_ascii=False,
+                indent=2
+            )
 
-    update_github_file(
-        "news.json",
-        news_data,
-        f"News update: {title}"
-    )
+            update_github_file(
+                "news.json",
+                news_data,
+                f"News update: {title}"
+            )
 
-    news_html = build_news_page()
+            news_html = build_news_page()
 
-    update_github_file(
-        "pubg-news.html",
-        news_html,
-        f"PUBG News update: {title}"
-    )
-
-    send_message("🌐 PUBG News sayti avtomatik yangilandi.") 
+            update_github_file(
+                "pubg-news.html",
+                news_html,
+                f"PUBG News update: {title}"
+            )
+ 
+            send_message("🌐 PUBG News sayti avtomatik yangilandi.") 
 
             text = soup.get_text(" ")
 
