@@ -303,7 +303,7 @@ def check_sites():
 
                    set_last_news(site["name"], title)
 
-                send_message(
+                   send_message(
                    f"📰 YANGI YANGILIK!\n\n"
                    f"🎮 {site['game']}\n"
                    f"📢 {title}\n"
