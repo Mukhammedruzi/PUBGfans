@@ -65,6 +65,58 @@ li{
     background:#ff6600;
     color:white;
 }
+.news-section{
+    margin:40px auto;
+    text-align:center;
+}
+
+.news-title{
+    color:#ffcc00;
+    font-size:28px;
+    margin-bottom:20px;
+}
+
+.news-card{
+    display:inline-block;
+    width:280px;
+    background:#1b1b1b;
+    border:2px solid #ffcc00;
+    border-radius:15px;
+    padding:20px;
+    margin:10px;
+    transition:0.3s;
+}
+
+.news-card:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #ffcc00;
+}
+
+.news-card h3{
+    color:#ffcc00;
+    margin-bottom:10px;
+}
+
+.news-card p{
+    color:#ddd;
+    font-size:15px;
+}
+
+.news-card a{
+    display:inline-block;
+    margin-top:15px;
+    padding:10px 20px;
+    background:#ffcc00;
+    color:#000;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.news-card a:hover{
+    background:#ff8800;
+    color:#fff;
+}
 </style>
 
 </head>
@@ -77,8 +129,39 @@ li{
   <a href="redeem.html" style="color:white;text-decoration:none;margin:10px;font-size:18px;">🎁 Redeem</a>
   <a href="contact.html" style="color:white;text-decoration:none;margin:10px;font-size:18px;">📞 Aloqa</a>
 </nav>
-<img src="banner.png">
 
+<!-- NEWS BO'LIMI -->
+<section class="news-section">
+    <h2>📰 Latest Game News</h2>
+
+    <div class="news-buttons">
+
+        <a href="pubg-news.html" class="news-btn pubg">
+            🎮 PUBG NEWS
+        </a>
+
+        <a href="mlbb-news.html" class="news-btn mlbb">
+            ⚔️ MLBB NEWS
+        </a>
+
+    </div>
+</section>
+<img src="banner.png">
+<div class="news-section">
+    <h2 class="news-title">🔥 Latest Game News 🔥</h2>
+
+    <div class="news-card">
+        <h3>🎮 PUBG NEWS</h3>
+        <p>PUBG Mobile yangiliklari, redeem kodlar, eventlar va yangilanishlar.</p>
+        <a href="pubg-news.html">Ochish</a>
+    </div>
+
+    <div class="news-card">
+        <h3>⚔️ MLBB NEWS</h3>
+        <p>Mobile Legends yangiliklari, redeem kodlar, eventlar va patch notelar.</p>
+        <a href="mlbb-news.html">Ochish</a>
+    </div>
+</div>
 <h1>🎮 Muhammadrozi Gaming 🎮</h1>
 <p style="color:#aaa;">
 📅 Oxirgi yangilanish: 17.07.2026
