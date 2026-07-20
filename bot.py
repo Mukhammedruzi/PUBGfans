@@ -293,8 +293,22 @@ def check_sites():
         try:
 
             html = get_html(site["url"])
-
             soup = BeautifulSoup(html, "html.parser")
+
+            title = soup.title.text.strip() if soup.title else site["name"]
+
+            last = get_last_news(site["name"])
+ 
+            if title != last:
+
+                   set_last_news(site["name"], title)
+
+                send_message(
+                   f"📰 YANGI YANGILIK!\n\n"
+                   f"🎮 {site['game']}\n"
+                   f"📢 {title}\n"
+                   f"🔗 {site['url']}"
+            )
 
             text = soup.get_text(" ")
 
