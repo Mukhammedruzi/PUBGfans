@@ -183,6 +183,18 @@ def save_redeem(code, source, game):
     })
 
     save_json(REDEEM_FILE, data)
+def save_news(title, url):
+    data = load_json("news.json", [])
+
+    data.insert(0, {
+        "title": title,
+        "url": url,
+        "time": datetime.now().strftime("%Y-%m-%d %H:%M")
+    })
+
+    data = data[:20]
+
+    save_json("news.json", data)
 # ===============================
 # Oxirgi yangilikni saqlash
 # ===============================
@@ -286,6 +298,37 @@ def build_redeem_page():
 """
 
     return html
+def build_news_page():
+
+    data = load_json("news.json", [])
+
+    html = """<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>PUBG News</title>
+</head>
+<body>
+
+<h1>📰 PUBG News</h1>
+"""
+
+    for item in data:
+
+        html += f"""
+<h3>{item['title']}</h3>
+<p>{item['time']}</p>
+<a href="{item['url']}">Batafsil o'qish</a>
+<hr>
+"""
+
+    html += """
+</body>
+</html>
+"""
+
+    return html
+    
 def check_sites():
 
     for site in SOURCES:
@@ -301,14 +344,39 @@ def check_sites():
  
             if title != last:
 
-                   set_last_news(site["name"], title)
+                set_last_news(site["name"], title)
 
-                   send_message(
-                   f"📰 YANGI YANGILIK!\n\n"
-                   f"🎮 {site['game']}\n"
-                   f"📢 {title}\n"
-                   f"🔗 {site['url']}"
+                send_message(
+                    f"📰 YANGI YANGILIK!\n\n"
+                    f"🎮 {site['game']}\n"
+                    f"📢 {title}\n"
+                    f"🔗 {site['url']}"
             )
+
+    if site["game"] == "PUBG":
+        save_news(title, site["url"])
+
+        news_data = json.dumps(
+        load_json("news.json", []),
+        ensure_ascii=False,
+        indent=2
+    )
+
+    update_github_file(
+        "news.json",
+        news_data,
+        f"News update: {title}"
+    )
+
+    news_html = build_news_page()
+
+    update_github_file(
+        "pubg-news.html",
+        news_html,
+        f"PUBG News update: {title}"
+    )
+
+    send_message("🌐 PUBG News sayti avtomatik yangilandi.") 
 
             text = soup.get_text(" ")
 
